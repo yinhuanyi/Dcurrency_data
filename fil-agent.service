@@ -1,0 +1,16 @@
+[Unit]
+Description=Dcurrency_data
+After=network.target
+[Service]
+Type=forking
+PIDFile=/app/Dcurrency_data/agent.pid
+Environment="CURRENT_DIR=/app/Dcurrency_data"
+User=root
+Group=root
+ExecStart=/app/Dcurrency_data/control.sh start
+ExecReload=/app/Dcurrency_datacontrol.sh restart
+ExecStop=/app/Dcurrency_datacontrol.sh stop
+RestartSec=100s
+
+[Install]
+WantedBy=multi-user.target

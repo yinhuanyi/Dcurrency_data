@@ -47,7 +47,7 @@ def decrypt(data: str):
 
 
 if __name__ == '__main__':
-    raw_data = "zHAs3erVUnD0DkJz"
+    raw_data = "lhjy9988"
     # raw_data = '7ozysja49fn5k81#5w_)pn9e6%)uma(&*rz_zv^oye5^lvp4^1'
     print(raw_data)
     cipher_data = encrypt(raw_data)

@@ -179,7 +179,7 @@ class BiWetsocket:
 
     # 连接打开，并且订阅流
     def on_open(self, spot_list):
-        print("on open")
+        binance_logger.info('websocket open......')
 
         # data = {"op": "subscribe", "args": ["swap/depth5:BTC-USD-SWAP"]}
         # data = {"sub":"market.{}.trade.detail".format(spot), "id": 1}

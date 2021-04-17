@@ -181,7 +181,7 @@ class HuoWetsocket:
 
     # 连接打开，并且订阅流
     def on_open(self, spot):
-        print("on open")
+        huobi_logger.info('huobi websocket open')
 
         # data = {"op": "subscribe", "args": ["swap/depth5:BTC-USD-SWAP"]}
         data = {"sub":"market.{}.trade.detail".format(spot), "id": 1}

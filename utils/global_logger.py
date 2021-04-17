@@ -37,6 +37,8 @@ class SingleLogger:
         return cls.__logger_map.get(logger_name)
 
 
+
+
 def getlogger(logger_name: str, info_file_path: str, error_file_path: str):
     return SingleLogger.getLoggerInstance(logger_name, info_file_path, error_file_path)
 

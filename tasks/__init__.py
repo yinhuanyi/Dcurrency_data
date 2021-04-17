@@ -7,20 +7,20 @@
 """
 
 from multiprocessing import Process
-
-from utils.const_file import  ENGILE_LOG
 from utils.global_logger import getlogger
 from utils.parse_file import EventSingleton
-from .process_task.consume_message import consume_kafka_message
-from .process_task.zabbix_heart_beat import send_zabbix_heart_beat
+from utils.const_file import AGENT_LOG
+from .process_task.binance import binance_spot_real_time
+from .process_task.huobi import huobi_spot_real_time
 
-engine_logger = getlogger(logger_name='engine', info_file_path=ENGILE_LOG, error_file_path=ENGILE_LOG)
+
+engine_logger = getlogger(logger_name='engine', info_file_path=AGENT_LOG, error_file_path=AGENT_LOG)
 
 def start_engine():
     global_event = EventSingleton.getEventInstance()
-
-    Process(target=consume_kafka_message, args=(global_event, ), name='consume_kafka_message').start()
-    Process(target=send_zabbix_heart_beat, args=(global_event, ), name='send_zabbix_heart_beat').start()
+    Process(target=huobi_spot_real_time, args=(global_event,), name='huobi_spot').start()
+    Process(target=binance_spot_real_time, args=(global_event,), name='binance_spot').start()
+    engine_logger.info("Spot Start......")
 
 
 if __name__ == '__main__':

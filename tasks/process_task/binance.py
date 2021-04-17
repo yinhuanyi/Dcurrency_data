@@ -7,35 +7,28 @@
 """
 
 from multiprocessing import Event
-import multiprocessing
-
-from utils.const_file import ZABBIX_INFO_LOG, ZABBIX_ERROR_LOG, SUBPROCESS_LOG
 from utils.global_logger import getlogger
-from utils.parse_file import  ProcessExecInterval, ZabbixServerConfigSingleton
-from utils.zabbix_send_data import ZabbixSender
-from utils import get_hostname
+from utils.const_file import  BINANCE_INFO_LOG, BINANCE_ERROR_LOG
+from utils.parse_file import MySQLSessionSingleton
+from model.coin import Coin
+from api.binance.spot import get_spot
+from threading import Thread
+
+binance_logger = getlogger('binance', BINANCE_INFO_LOG, BINANCE_ERROR_LOG)
 
 
-zabbix_logger = getlogger(logger_name='zabbix', info_file_path=ZABBIX_INFO_LOG, error_file_path=ZABBIX_ERROR_LOG)
-subprocess_logger = getlogger(logger_name='subprocess', info_file_path=SUBPROCESS_LOG, error_file_path=SUBPROCESS_LOG)
+def binance_spot_real_time(event: Event):
 
-def send_zabbix_heart_beat(event: Event):
-    interval = ProcessExecInterval._get_zabbix_interval()
-    zabbix_server_ip, port, item = ZabbixServerConfigSingleton._get_zabbix_server_config_info()
+    binance_logger.info("Get Binance Spot......")
+    session = MySQLSessionSingleton._get_mysql_session()
+    huobi_spots = session.query(Coin.name).filter_by(type='binance').all()
+    spot_list = []
 
-    while not event.wait(int(interval)):
-        hostname = get_hostname()
-        subprocess_logger.info('Current Process is : {}'.format(multiprocessing.current_process().name))
+    for item in huobi_spots:
+        spot_list.append('{}usdt'.format(item[0]))
 
-        try:
-            zabbix_logger.info('Zabbix_Server_Ip={} Port={} Hostname={} Item={} Value={}'.format(zabbix_server_ip, port, hostname, item, '1'))
-            zabbix_sender = ZabbixSender(zabbix_server_ip, int(port), hostname, item, '1')
-            ret = zabbix_sender.send()
-            zabbix_logger.info(ret)
+    Thread(target=get_spot, args=(spot_list,), name='spot_list').start()
 
-        except Exception as e:
-            zabbix_logger.error('Zabbix Send Package Error: {}'.format(e))
-            event.set()
 
 if __name__ == '__main__':
-    send_zabbix_heart_beat(Event())
+    binance_spot_real_time(Event())

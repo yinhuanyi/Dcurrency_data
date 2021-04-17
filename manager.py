@@ -3,20 +3,18 @@
 @Author: Robby
 @Module name:
 @Create date: 2020-11-17
-@Function: xb-cl01-se-063-001 做测试
+@Function:
 """
 import sys
 import os
 import signal
 from daemonization import Daemonize
 
-from utils.const_file import PID_FILE, ENGILE_LOG
+from utils.const_file import PID_FILE, AGENT_LOG
 from utils.global_logger import getlogger
 from tasks import start_engine
 
-# 让守护进程正确日志和错误日志输出到同一个文件中
-
-engile_logger = getlogger(logger_name='engine', info_file_path=ENGILE_LOG, error_file_path=ENGILE_LOG)
+engile_logger = getlogger(logger_name='engine', info_file_path=AGENT_LOG, error_file_path=AGENT_LOG)
 
 if len(sys.argv) != 2:
     print('Usage:python {} [start|stop]'.format(sys.argv[0]), file=sys.stderr)
@@ -24,7 +22,7 @@ if len(sys.argv) != 2:
 
 if sys.argv[1] == 'start':
     try:
-        daemon = Daemonize(pidfile=PID_FILE, stdout=ENGILE_LOG, stderr=ENGILE_LOG)
+        daemon = Daemonize(pidfile=PID_FILE, stdout=AGENT_LOG, stderr=AGENT_LOG)
         daemon.start()
         print('Engine Start Success', file=sys.stdout)
         engile_logger.info('Engine Start Success')
@@ -37,7 +35,6 @@ if sys.argv[1] == 'start':
 elif sys.argv[1] == 'stop':
     if os.path.exists(PID_FILE):
         try:
-            # 获取全局Event事件，设置为True，让线程退出 0x7fa899b52e80
             with open(PID_FILE) as f:
                 os.kill(int(f.read()), signal.SIGKILL)
                 os.remove(PID_FILE)

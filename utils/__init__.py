@@ -5,8 +5,5 @@
 @Create date: 2020-10-28
 @Function: 
 """
-import socket
 
-def get_hostname():
-    return socket.gethostname()
 
